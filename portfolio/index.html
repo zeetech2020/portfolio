@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aisien Zion | Front-End Developer Portfolio</title>
+    <link rel="icon" type="image/png" href="zion.png">
+
+    <!-- Load Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Use Inter font and set a dark theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-dark': '#111827', // Darker background
+                        'secondary-dark': '#1F2937', // Slightly lighter cards/sections
+                        'accent-teal': '#2DD4BF', // Vibrant accent color
+                        'text-light': '#F9FAFB',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth scrolling for internal links */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Custom scrollbar styling (optional, but nice for dark themes) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1F2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4B5563;
+            border-radius: 4px;
+        }
+        .section {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+    </style>
+</head>
+<body class="bg-primary-dark text-text-light font-sans antialiased">
+
+    <!-- 
+        1. Navigation Bar 
+        Sticky nav for easy access on mobile and desktop
+    -->
+    <header class="sticky top-0 z-50 bg-primary-dark/95 backdrop-blur-sm shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <!-- Logo/Name -->
+            <a href="#home" class="text-2xl font-bold text-accent-teal hover:text-white transition duration-300">
+                &lt;Aisien zion /&gt;
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#about" class="text-text-light hover:text-accent-teal transition duration-300">About</a>
+                <a href="#projects" class="text-text-light hover:text-accent-teal transition duration-300">Projects</a>
+                <a href="#contact" class="text-text-light hover:text-accent-teal transition duration-300">Contact</a>
+            </nav>
+
+            <!-- Mobile Menu Button (Placeholder for complex JS, keeping it simple for single file) -->
+            <div class="md:hidden">
+                <button id="menuBtn" class="text-text-light hover:text-accent-teal focus:outline-none" aria-label="Toggle menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+
+
+        </div>
+    </header>
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobileMenu" class="m-auto md:hidden hidden bg-primary-dark border-t border-gray-700">
+        <nav class="flex flex-col py-4 space-y-3 px-6  items-end">
+            <a href="#about" class="text-text-light hover:text-accent-teal transition">About</a>
+            <a href="#projects" class="text-text-light hover:text-accent-teal transition">Projects</a>
+            <a href="#contact" class="text-text-light hover:text-accent-teal transition">Contact</a>
+        </nav>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- 
+            2. Hero Section 
+            The first thing the visitor sees, designed to be impactful.
+        -->
+        <section id="home" class="section pt-32 pb-24 md:pt-40 md:pb-32 text-center flex flex-row items-center justify-around">
+            <div class="">
+                <!-- Placeholder for photo/image -->
+                <img src="zion.png" alt="Your Placeholder Photo" class=" max-sm:hidden w-22 h-22 mx-auto md:mx-0 object-cover ">
+            </div>
+            <div class="max-w-4xl mx-auto">
+                <p class="text-lg font-semibold text-accent-teal mb-4">Hello World, I'm</p>
+                <h1 class="text-5xl sm:text-7xl font-extrabold leading-tight tracking-tight mb-6">
+                    [Aisien Zion]
+                </h1>
+                <p class="text-xl sm:text-2xl text-gray-400 mb-10">
+                    I build exceptional user interfaces and seamless web experiences as a <span class="text-accent-teal font-medium">Front-End Developer</span>.
+                </p>
+                <a href="#projects" class="inline-block px-8 py-3 bg-accent-teal text-primary-dark font-bold text-lg rounded-full shadow-lg hover:bg-teal-300 transition duration-300 transform hover:scale-105">
+                    View My Work →
+                </a>
+            </div>
+        </section>
+
+        <!-- 
+            3. About Me 
+            Adding professional context and core skills.
+        -->
+        <section id="about" class="section bg-secondary-dark rounded-xl shadow-2xl">
+            <h2 class="text-4xl font-bold text-center mb-16">About Me</h2>
+            <div class="grid md:grid-cols-3 gap-12 items-start ">
+                
+                <!-- Bio Text -->
+                <div class="md:col-span-2 ml-10 ">
+                    <p class="text-gray-300 mb-6 leading-relaxed ">
+                        I am passionate about creating clean, functional, and visually appealing web applications. My journey into front-end development began with a focus on delivering excellent user experience (UX) and writing highly maintainable code. I thrive in environments that prioritize performance and accessibility.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed ">
+                        I specialize in translating design concepts into pixel-perfect, responsive reality, ensuring every project not only looks great but also provides an intuitive and smooth experience across all devices. I am constantly learning new tools and staying ahead of modern web standards.
+                    </p>
+                    <div class="mt-8">
+                        <!-- Placeholder for photo/image -->
+                        <img src="zion.png" alt="Your Placeholder Photo" class="w-24 h-24 rounded-full mx-auto md:mx-0 object-cover border-4 border-accent-teal/50 shadow-lg">
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="max-sm:ml-10">
+                    <h3 class="text-2xl font-semibold mb-4 text-accent-teal">Core Skills</h3>
+                    <ul class="space-y-3 text-gray-400 ">
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>HTML5 & CSS3</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>JavaScript (ES6+)</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>React / Vue.js</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Tailwind CSS & SASS</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Gsap </li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Git & GitHub</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 
+            4. Projects Section 
+            Showcasing the two existing websites.
+        -->
+        <section id="projects" class="section">
+            <h2 class="text-4xl font-bold text-center mb-16">My Latest Work</h2>
+            
+            <div class="space-y-16">
+                <!-- Project 1 -->
+                <div class="bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row gap-8 items-center">
+                    <!-- Project Image -->
+                    <div class="lg:w-1/2 flex-shrink-0">
+                        <img src="nike.png"
+                             alt="Screenshot of Project Website 1" 
+                             class="rounded-lg border-2 border-accent-teal/50 transition duration-500 hover:scale-[1.01] shadow-xl w-full h-auto"
+                             onerror="this.src='https://placehold.co/600x400/2DD4BF/111827?text=Image+Not+Found'">
+                    </div>
+                    
+                    <!-- Project Details -->
+                    <div class="lg:w-1/2">
+                        <h3 class="text-3xl font-bold text-accent-teal mb-3">Project Title: E-Commerce Store</h3>
+                        <p class="text-gray-400 mb-6">
+                            A fully responsive mock e-commerce platform built to demonstrate advanced state management and dynamic routing. It features a complete shopping cart implementation, product filtering, and user authentication flow.
+                        </p>
+                        <p class="mb-4 text-sm text-gray-500 font-medium">
+                            <span class="text-accent-teal">Tech Stack:</span> React, Tailwind CSS, Gsap
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://nike-woad-seven.vercel.app/" target="_blank" class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300 transform hover:translate-y-[-2px]">
+                                View Live Site
+                            </a>
+                            <a href="https://github.com/zeetech2020/Nike" target="_blank" class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">
+                                GitHub Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row-reverse gap-8 items-center">
+                    
+                    <!-- Project Image -->
+                    <div class="lg:w-1/2 flex-shrink-0">
+                        <img src="gas.png"
+                             alt="Screenshot of Project Website 2" 
+                             class="rounded-lg border-2 border-gray-500 transition duration-500 hover:scale-[1.01] shadow-xl w-full h-auto"
+                             onerror="this.src='https://placehold.co/600x400/4B5563/111827?text=Image+Not+Found'">
+                    </div>
+                    
+                    <!-- Project Details -->
+                    <div class="lg:w-1/2 lg:text-right">
+                        <h3 class="text-3xl font-bold text-accent-teal mb-3">Project Title: School Website</h3>
+                        <p class="text-gray-400 mb-6">
+                            An interactive and minimalist school dashboard built with React, Tailwind CSS, and HTML, featuring smooth GSAP-powered animations. The project focuses on creating a responsive and visually engaging interface that allows students and staff to easily access important information across all devices.
+                        </p>
+                        <p class="mb-4 text-sm text-gray-500 font-medium">
+                            <span class="text-accent-teal">Tech Stack:</span> React Js,Tailwind Css, Gsap, HTML5,  (Internal Styling)
+                        </p>
+                        <div class="flex lg:justify-end space-x-4">
+                            <a href="https://github.com/zeetech2020/glorious-angel-school" target="_blank" class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">
+                                GitHub Code
+                            </a>
+                            <a href="https://glorious-angel-school.vercel.app/" target="_blank" class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300 transform hover:translate-y-[-2px]">
+                                View Live Site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+            5. Contact Section 
+            A simple call to action for recruiters/clients.
+        -->
+        <section id="contact" class="section text-center">
+            <h2 class="text-4xl font-bold mb-6">Get In Touch</h2>
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                Have a project idea or just want to chat about front-end technologies? Feel free to reach out—my inbox is always open.
+            </p>
+
+            <a href="mailto:aisienzion2020@gmail.com" class="inline-block px-10 py-4 border-2 border-accent-teal text-accent-teal font-bold text-xl rounded-full hover:bg-accent-teal hover:text-primary-dark transition duration-300 transform hover:scale-105">
+                Say Hello!
+            </a>
+            
+            <div class="mt-12 text-gray-500 space-x-6 text-2xl">
+
+                <!-- GitHub Icon -->
+                <a href="https://github.com/zeetech2020/" target="_blank" class="hover:text-accent-teal transition duration-300" aria-label="GitHub Profile">
+                    <i class="fa-brands fa-github" style="color: #ffffff;"></i>
+                </a>
+                <!-- Email Icon -->
+                <a href="mailto:aisienzion2020@gmail.com" class="hover:text-accent-teal transition duration-300" aria-label="Email Address">
+                    <i class="fa-solid fa-envelope" style="color: #ffffff;"></i>
+                </a>
+                <a href="tel:+2349150320350"
+                   class="inline-flex items-center px-6 py-3 bg-accent-teal text-primary-dark font-bold rounded-full shadow-lg hover:bg-teal-300 transition duration-300 transform hover:scale-105">
+
+                    <!-- Phone Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5 mr-2"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.47l.7 2.33a2 2 0 01-.45 1.86l-1.12 1.12a16 16 0 007.07 7.07l1.12-1.12a2 2 0 011.86-.45l2.33.7A2 2 0 0121 18.72V21a2 2 0 01-2 2h-1C8.82 23 2 16.18 2 8V6a2 2 0 011-1.73z" />
+                    </svg>
+
+                    Call Me
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-secondary-dark py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2025 Aisien zion. Built with HTML & Tailwind CSS.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to handle smooth scrolling/navigation if needed
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Prevent default anchor link behavior
+                    // Note: Since we use scroll-behavior: smooth in CSS, this is technically optional, 
+                    // but good practice if more complex routing/logic were involved.
+                });
+            });
+        });
+    </script>
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+
+        menuBtn.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+    </script>
+
+</body>
+                  </html>
