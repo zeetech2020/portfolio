@@ -1,404 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aisien Zion | Front-End Developer Portfolio</title>
-    <link rel="icon" type="image/png" href="zion.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platoon 4</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        'primary-dark': '#111827',
-                        'secondary-dark': '#1F2937',
-                        'accent-teal': '#2DD4BF',
-                        'text-light': '#F9FAFB',
-                    }
-                }
-            }
-        }
-    </script>
+    body {
+      background-color: #000;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    /* LED dot grid overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(0,0,0,0.6) 1px, transparent 1px);
+      background-size: 6px 6px;
+      pointer-events: none;
+      z-index: 10;
+    }
 
-        html { scroll-behavior: smooth; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1F2937; }
-        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
-        .section { padding-top: 5rem; padding-bottom: 5rem; }
+    /* Outer LED board */
+    .led-board {
+      width: 96vw;
+      background: #0a0a0a;
+      border: 4px solid #1a1a1a;
+      border-radius: 10px;
+      box-shadow:
+        0 0 0 2px #333,
+        0 0 30px rgba(255, 0, 0, 0.15),
+        inset 0 0 40px rgba(0,0,0,0.8);
+      padding: 18px 0;
+      overflow: hidden;
+      position: relative;
+    }
 
-        /* ── CSS-only entrance animations (no JS dependency) ── */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes fadeLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeRight {
-            from { opacity: 0; transform: translateX(30px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
+    /* Scanline effect */
+    .led-board::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 0, 0, 0.08) 3px,
+        rgba(0, 0, 0, 0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 5;
+    }
 
-        /* Hero animations — play immediately on load */
-        .hero-tag   { animation: fadeUp   0.6s ease both; animation-delay: 0.1s; }
-        .hero-name  { animation: fadeUp   0.6s ease both; animation-delay: 0.25s; }
-        .hero-sub   { animation: fadeUp   0.6s ease both; animation-delay: 0.4s; }
-        .hero-btns  { animation: fadeUp   0.6s ease both; animation-delay: 0.55s; }
-        .hero-photo { animation: fadeIn   0.8s ease both; animation-delay: 0.2s; }
-        .hero-scroll{ animation: fadeIn   0.8s ease both; animation-delay: 0.8s; }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: scroll-left 8s linear infinite;
+    }
 
-        /* Scroll-triggered via IntersectionObserver — hidden until visible */
-        .reveal {
-            opacity: 0;
-            transform: translateY(25px);
-            transition: opacity 0.65s ease, transform 0.65s ease;
-        }
-        .reveal.from-left  { transform: translateX(-25px); }
-        .reveal.from-right { transform: translateX(25px); }
-        .reveal.visible {
-            opacity: 1;
-            transform: none;
-        }
+    .marquee-text {
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      font-weight: 900;
+      font-size: clamp(4rem, 12vw, 9rem);
+      color: #FF0000;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      padding-right: 12vw;
+      /* LED glow effect */
+      text-shadow:
+        0 0 6px #ff0000,
+        0 0 14px #ff0000,
+        0 0 28px #cc0000,
+        0 0 50px #990000;
+      /* Segment / blocky LED feel */
+      -webkit-font-smoothing: none;
+    }
 
-        /* ── Glowing ring ── */
-        .photo-ring { position: relative; display: inline-block; }
-        .photo-ring::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            background: conic-gradient(#2DD4BF, #0d9488, #2DD4BF);
-            animation: spin-ring 4s linear infinite;
-            z-index: 0;
-        }
-        .photo-ring img { position: relative; z-index: 1; }
-        @keyframes spin-ring { to { transform: rotate(360deg); } }
+    @keyframes scroll-left {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
 
-        /* ── Float ── */
-        .float-badge { animation: float 3s ease-in-out infinite; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-7px); }
-        }
+    /* Corner screws on board */
+    .screw {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle at 35% 35%, #555, #111);
+      border-radius: 50%;
+      border: 1px solid #444;
+    }
+    .screw.tl { top: 7px; left: 10px; }
+    .screw.tr { top: 7px; right: 10px; }
+    .screw.bl { bottom: 7px; left: 10px; }
+    .screw.br { bottom: 7px; right: 10px; }
 
-        /* ── Cursor blink ── */
-        .cursor::after {
-            content: '|';
-            animation: blink 0.7s step-end infinite;
-            color: #2DD4BF;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0; }
-        }
-
-        /* ── Skill bar ── */
-        .skill-bar-fill {
-            width: 0%;
-            transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        /* ── Project card hover ── */
-        .project-card { transition: box-shadow 0.4s ease, transform 0.4s ease; }
-        .project-card:hover {
-            box-shadow: 0 0 30px rgba(45,212,191,0.15);
-            transform: translateY(-4px);
-        }
-
-        /* ── Nav underline ── */
-        .nav-link { position: relative; }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px; left: 0;
-            width: 0; height: 2px;
-            background: #2DD4BF;
-            transition: width 0.3s ease;
-        }
-        .nav-link:hover::after { width: 100%; }
-
-        /* ── Mobile menu ── */
-        #mobileMenu {
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: max-height 0.35s ease, opacity 0.35s ease;
-        }
-        #mobileMenu.open { max-height: 300px; opacity: 1; }
-
-        .glow-text { text-shadow: 0 0 20px rgba(45,212,191,0.4); }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation: none !important; transition: none !important; }
-            .reveal { opacity: 1 !important; transform: none !important; }
-        }
-    </style>
+    /* Bottom status bar */
+    .status-bar {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ff0000;
+      box-shadow: 0 0 6px #ff0000;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.4s; }
+    .dot:nth-child(3) { animation-delay: 0.8s; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.15; }
+    }
+    .status-label {
+      color: #550000;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+  </style>
 </head>
-<body class="bg-primary-dark text-text-light font-sans antialiased">
+<body>
 
-    <!-- Navigation -->
-    <header class="sticky top-0 z-50 bg-primary-dark/95 backdrop-blur-sm shadow-xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-            <a href="#home" class="text-2xl font-bold text-accent-teal hover:text-white transition duration-300">
-                &lt;Aisien Zion /&gt;
-            </a>
-            <nav class="hidden md:flex space-x-8">
-                <a href="#about"    class="nav-link text-text-light hover:text-accent-teal transition duration-300">About</a>
-                <a href="#projects" class="nav-link text-text-light hover:text-accent-teal transition duration-300">Projects</a>
-                <a href="#contact"  class="nav-link text-text-light hover:text-accent-teal transition duration-300">Contact</a>
-            </nav>
-            <div class="md:hidden">
-                <button id="menuBtn" class="text-text-light hover:text-accent-teal focus:outline-none" aria-label="Toggle menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
+  <div class="led-board">
+    <div class="screw tl"></div>
+    <div class="screw tr"></div>
+    <div class="screw bl"></div>
+    <div class="screw br"></div>
 
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="md:hidden bg-primary-dark border-t border-gray-700">
-        <nav class="flex flex-col py-4 space-y-3 px-6 items-end">
-            <a href="#about"    class="text-text-light hover:text-accent-teal transition">About</a>
-            <a href="#projects" class="text-text-light hover:text-accent-teal transition">Projects</a>
-            <a href="#contact"  class="text-text-light hover:text-accent-teal transition">Contact</a>
-        </nav>
+    <div class="marquee-track">
+      <!-- Duplicated for seamless loop -->
+      <span class="marquee-text">⚡ PLATOON 4 &nbsp;★&nbsp; PLATOON 4 &nbsp;★&nbsp; PLATOON 4 &nbsp;★&nbsp;</span>
+      <span class="marquee-text">⚡ PLATOON 4 &nbsp;★&nbsp; PLATOON 4 &nbsp;★&nbsp; PLATOON 4 &nbsp;★&nbsp;</span>
     </div>
+  </div>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="status-bar">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <span class="status-label">PLATOON 4 — LIVE</span>
+  </div>
 
-        <!-- Hero -->
-        <section id="home" class="section pt-24 pb-24 md:pt-36 md:pb-32">
-            <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-10">
-
-                <!-- Text -->
-                <div class="w-full md:w-3/5 text-center md:text-left">
-                    <p class="hero-tag text-lg font-semibold text-accent-teal mb-3">Hello World, I'm</p>
-                    <h1 class="hero-name text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-tight tracking-tight mb-6">
-                        Aisien Zion<span class="cursor"></span>
-                    </h1>
-                    <p class="hero-sub text-lg sm:text-xl text-gray-400 mb-8 max-w-xl mx-auto md:mx-0">
-                        I build exceptional user interfaces and seamless web experiences as a
-                        <span class="text-accent-teal font-semibold">Front-End Developer</span>.
-                    </p>
-                    <div class="hero-btns flex flex-wrap gap-4 justify-center md:justify-start">
-                        <a href="#projects" class="float-badge inline-block px-8 py-3 bg-accent-teal text-primary-dark font-bold text-base rounded-full shadow-lg hover:bg-teal-300 transition duration-300">
-                            View My Work →
-                        </a>
-                        <a href="#contact" class="inline-block px-8 py-3 border-2 border-accent-teal text-accent-teal font-bold text-base rounded-full hover:bg-accent-teal hover:text-primary-dark transition duration-300">
-                            Hire Me
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Photo — visible on ALL screens -->
-                <div class="hero-photo w-full md:w-2/5 flex justify-center md:justify-end">
-                    <div class="photo-ring rounded-full">
-                        <img src="zion.png" alt="Aisien Zion"
-                             class="w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full object-cover"
-                             onerror="this.src='https://placehold.co/288x288/2DD4BF/111827?text=Z'">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Scroll hint -->
-            <div class="hero-scroll mt-16 flex justify-center">
-                <div class="flex flex-col items-center gap-2 text-gray-500 text-sm">
-                    <span>Scroll</span>
-                    <div class="w-px h-8 bg-gradient-to-b from-gray-500 to-transparent animate-bounce"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- About -->
-        <section id="about" class="section bg-secondary-dark rounded-xl shadow-2xl px-6 sm:px-10">
-            <h2 class="reveal text-4xl font-bold text-center mb-16">About Me</h2>
-            <div class="grid md:grid-cols-3 gap-12 items-start">
-                <div class="md:col-span-2 space-y-4">
-                    <p class="reveal from-left text-gray-300 leading-relaxed">
-                        I am passionate about creating clean, functional, and visually appealing web applications. My journey into front-end development began with a focus on delivering excellent user experience (UX) and writing highly maintainable code.
-                    </p>
-                    <p class="reveal from-left text-gray-300 leading-relaxed">
-                        I specialize in translating design concepts into pixel-perfect, responsive reality, ensuring every project not only looks great but also provides an intuitive and smooth experience across all devices.
-                    </p>
-                    <div class="reveal from-left pt-6">
-                        <div class="photo-ring rounded-full inline-block">
-                            <img src="zion.png" alt="Aisien Zion"
-                                 class="w-20 h-20 rounded-full object-cover"
-                                 onerror="this.src='https://placehold.co/80x80/2DD4BF/111827?text=Z'">
-                        </div>
-                    </div>
-                </div>
-                <div class="reveal from-right">
-                    <h3 class="text-2xl font-semibold mb-6 text-accent-teal glow-text">Core Skills</h3>
-                    <div class="space-y-4" id="skillBars"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Projects -->
-        <section id="projects" class="section">
-            <h2 class="reveal text-4xl font-bold text-center mb-16">My Latest Work</h2>
-            <div class="space-y-16">
-
-                <div class="project-card reveal bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row gap-8 items-center">
-                    <div class="w-full lg:w-1/2 flex-shrink-0 overflow-hidden rounded-lg">
-                        <img src="nike.png" alt="Nike E-Commerce Store"
-                             class="rounded-lg border-2 border-accent-teal/50 w-full h-auto transition duration-500 hover:scale-[1.03] shadow-xl"
-                             onerror="this.src='https://placehold.co/600x400/2DD4BF/111827?text=Nike+Store'">
-                    </div>
-                    <div class="w-full lg:w-1/2">
-                        <p class="text-accent-teal text-sm font-semibold uppercase tracking-widest mb-1">Featured Project</p>
-                        <h3 class="text-2xl sm:text-3xl font-bold mb-3">E-Commerce Store</h3>
-                        <p class="text-gray-400 mb-5 leading-relaxed">
-                            A fully responsive mock e-commerce platform featuring a complete shopping cart, product filtering, and user authentication flow.
-                        </p>
-                        <p class="mb-5 text-sm text-gray-500"><span class="text-accent-teal font-medium">Stack:</span> React · Tailwind CSS · GSAP</p>
-                        <div class="flex flex-wrap gap-3">
-                            <a href="https://nike-woad-seven.vercel.app/" target="_blank"
-                               class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300">View Live ↗</a>
-                            <a href="https://github.com/zeetech2020/Nike" target="_blank"
-                               class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">GitHub Code</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card reveal bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row-reverse gap-8 items-center">
-                    <div class="w-full lg:w-1/2 flex-shrink-0 overflow-hidden rounded-lg">
-                        <img src="gas.png" alt="Glorious Angel School Website"
-                             class="rounded-lg border-2 border-gray-500 w-full h-auto transition duration-500 hover:scale-[1.03] shadow-xl"
-                             onerror="this.src='https://placehold.co/600x400/4B5563/111827?text=School+Website'">
-                    </div>
-                    <div class="w-full lg:w-1/2 lg:text-right">
-                        <p class="text-accent-teal text-sm font-semibold uppercase tracking-widest mb-1">Featured Project</p>
-                        <h3 class="text-2xl sm:text-3xl font-bold mb-3">School Website</h3>
-                        <p class="text-gray-400 mb-5 leading-relaxed">
-                            An interactive school dashboard with smooth animations, responsive design, and easy navigation for students and staff across all devices.
-                        </p>
-                        <p class="mb-5 text-sm text-gray-500"><span class="text-accent-teal font-medium">Stack:</span> React · Tailwind CSS · GSAP · HTML5</p>
-                        <div class="flex flex-wrap gap-3 lg:justify-end">
-                            <a href="https://glorious-angel-school.vercel.app/" target="_blank"
-                               class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300">View Live ↗</a>
-                            <a href="https://github.com/zeetech2020/glorious-angel-school" target="_blank"
-                               class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">GitHub Code</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact -->
-        <section id="contact" class="section text-center">
-            <h2 class="reveal text-4xl font-bold mb-6">Get In Touch</h2>
-            <p class="reveal text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                Have a project idea or just want to chat about front-end technologies? My inbox is always open.
-            </p>
-            <div class="reveal">
-                <a href="mailto:aisienzion2020@gmail.com"
-                   class="inline-block px-10 py-4 border-2 border-accent-teal text-accent-teal font-bold text-xl rounded-full hover:bg-accent-teal hover:text-primary-dark transition duration-300 hover:scale-105 transform">
-                    Say Hello!
-                </a>
-            </div>
-            <div class="reveal mt-12 flex flex-wrap items-center justify-center gap-6 text-2xl">
-                <a href="https://github.com/zeetech2020/" target="_blank" class="hover:text-accent-teal transition duration-300" aria-label="GitHub">
-                    <i class="fa-brands fa-github text-white"></i>
-                </a>
-                <a href="mailto:aisienzion2020@gmail.com" class="hover:text-accent-teal transition duration-300" aria-label="Email">
-                    <i class="fa-solid fa-envelope text-white"></i>
-                </a>
-                <a href="tel:+2349150320350"
-                   class="inline-flex items-center px-6 py-3 bg-accent-teal text-primary-dark font-bold text-base rounded-full shadow-lg hover:bg-teal-300 transition duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.47l.7 2.33a2 2 0 01-.45 1.86l-1.12 1.12a16 16 0 007.07 7.07l1.12-1.12a2 2 0 011.86-.45l2.33.7A2 2 0 0121 18.72V21a2 2 0 01-2 2h-1C8.82 23 2 16.18 2 8V6a2 2 0 011-1.73z"/>
-                    </svg>
-                    Call Me
-                </a>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-secondary-dark py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            <p>&copy; 2025 Aisien Zion. Built with HTML &amp; Tailwind CSS.</p>
-        </div>
-    </footer>
-
-    <script>
-        /* ── Mobile menu ── */
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.remove('open')));
-
-        /* ── Smooth scroll ── */
-        document.querySelectorAll('a[href^="#"]').forEach(link => {
-            link.addEventListener('click', e => {
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
-            });
-        });
-
-        /* ── Skill bars ── */
-        const skills = [
-            { name: 'HTML5 & CSS3', pct: 95 },
-            { name: 'JavaScript (ES6+)', pct: 88 },
-            { name: 'React / Vue.js', pct: 82 },
-            { name: 'Tailwind CSS & SASS', pct: 90 },
-            { name: 'GSAP', pct: 75 },
-            { name: 'Git & GitHub', pct: 85 },
-        ];
-        const container = document.getElementById('skillBars');
-        skills.forEach(s => {
-            container.insertAdjacentHTML('beforeend', `
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span class="text-gray-300 flex items-center gap-2">
-                    <svg class="w-4 h-4 flex-shrink-0" style="color:#2DD4BF" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>${s.name}</span>
-                  <span style="color:#2DD4BF" class="font-semibold">${s.pct}%</span>
-                </div>
-                <div class="h-2 rounded-full overflow-hidden" style="background:#374151">
-                  <div class="skill-bar-fill h-full rounded-full" data-pct="${s.pct}" style="background:linear-gradient(to right,#34d399,#0d9488)"></div>
-                </div>
-              </div>`);
-        });
-
-        /* ── IntersectionObserver for scroll reveals ── */
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.12 });
-
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        /* ── Skill bar trigger ── */
-        const skillObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    document.querySelectorAll('.skill-bar-fill').forEach(b => b.style.width = b.dataset.pct + '%');
-                    skillObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
-        skillObserver.observe(document.getElementById('skillBars'));
-    </script>
 </body>
 </html>
