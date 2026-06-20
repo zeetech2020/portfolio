@@ -5,184 +5,280 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aisien Zion | Front-End Developer Portfolio</title>
     <link rel="icon" type="image/png" href="zion.png">
-
-    <!-- Load Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Use Inter font and set a dark theme -->
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        'primary-dark': '#111827', // Darker background
-                        'secondary-dark': '#1F2937', // Slightly lighter cards/sections
-                        'accent-teal': '#2DD4BF', // Vibrant accent color
+                        'primary-dark': '#111827',
+                        'secondary-dark': '#1F2937',
+                        'accent-teal': '#2DD4BF',
                         'text-light': '#F9FAFB',
                     }
                 }
             }
         }
     </script>
+
     <style>
-        /* Smooth scrolling for internal links */
-        html {
-            scroll-behavior: smooth;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        html { scroll-behavior: smooth; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1F2937; }
+        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
+
+        .section { padding-top: 5rem; padding-bottom: 5rem; }
+
+        /* ── Initial hidden states for GSAP ── */
+        .fade-up       { opacity: 0; transform: translateY(40px); }
+        .fade-left     { opacity: 0; transform: translateX(-40px); }
+        .fade-right    { opacity: 0; transform: translateX(40px); }
+        .fade-in       { opacity: 0; }
+
+        /* ── Glowing teal ring on profile photo ── */
+        .photo-ring {
+            position: relative;
+            display: inline-block;
         }
-        /* Custom scrollbar styling (optional, but nice for dark themes) */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .photo-ring::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: conic-gradient(#2DD4BF, #0d9488, #2DD4BF);
+            animation: spin-ring 4s linear infinite;
+            z-index: 0;
         }
-        ::-webkit-scrollbar-track {
-            background: #1F2937;
+        .photo-ring img { position: relative; z-index: 1; }
+        @keyframes spin-ring {
+            to { transform: rotate(360deg); }
         }
-        ::-webkit-scrollbar-thumb {
-            background: #4B5563;
-            border-radius: 4px;
+
+        /* ── Floating badge in hero ── */
+        .float-badge {
+            animation: float 3s ease-in-out infinite;
         }
-        .section {
-            padding-top: 5rem;
-            padding-bottom: 5rem;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-8px); }
+        }
+
+        /* ── Typing cursor blink ── */
+        .cursor::after {
+            content: '|';
+            animation: blink 0.7s step-end infinite;
+            color: #2DD4BF;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+
+        /* ── Skill bar fill ── */
+        .skill-bar-fill {
+            width: 0%;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ── Project card hover glow ── */
+        .project-card {
+            transition: box-shadow 0.4s ease, transform 0.4s ease;
+        }
+        .project-card:hover {
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.15);
+            transform: translateY(-4px);
+        }
+
+        /* ── Nav link underline animation ── */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: #2DD4BF;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* ── Mobile menu slide down ── */
+        #mobileMenu {
+            transition: max-height 0.35s ease, opacity 0.35s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        #mobileMenu.open {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        /* ── Teal text glow pulse ── */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(45,212,191,0.4);
+        }
+
+        /* ── Reduced motion: disable everything ── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .fade-up, .fade-left, .fade-right, .fade-in { opacity: 1 !important; transform: none !important; }
         }
     </style>
 </head>
 <body class="bg-primary-dark text-text-light font-sans antialiased">
 
-    <!-- 
-        1. Navigation Bar 
-        Sticky nav for easy access on mobile and desktop
-    -->
+    <!-- ── Navigation ── -->
     <header class="sticky top-0 z-50 bg-primary-dark/95 backdrop-blur-sm shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-            <!-- Logo/Name -->
-            <a href="#home" class="text-2xl font-bold text-accent-teal hover:text-white transition duration-300">
-                &lt;Aisien zion /&gt;
+            <a href="#home" id="logo" class="text-2xl font-bold text-accent-teal hover:text-white transition duration-300">
+                &lt;Aisien Zion /&gt;
             </a>
-
-            <!-- Desktop Navigation -->
             <nav class="hidden md:flex space-x-8">
-                <a href="#about" class="text-text-light hover:text-accent-teal transition duration-300">About</a>
-                <a href="#projects" class="text-text-light hover:text-accent-teal transition duration-300">Projects</a>
-                <a href="#contact" class="text-text-light hover:text-accent-teal transition duration-300">Contact</a>
+                <a href="#about"    class="nav-link text-text-light hover:text-accent-teal transition duration-300">About</a>
+                <a href="#projects" class="nav-link text-text-light hover:text-accent-teal transition duration-300">Projects</a>
+                <a href="#contact"  class="nav-link text-text-light hover:text-accent-teal transition duration-300">Contact</a>
             </nav>
-
-            <!-- Mobile Menu Button (Placeholder for complex JS, keeping it simple for single file) -->
             <div class="md:hidden">
                 <button id="menuBtn" class="text-text-light hover:text-accent-teal focus:outline-none" aria-label="Toggle menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    <svg id="menuIcon" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    </svg>
                 </button>
             </div>
-
-
         </div>
     </header>
-    <!-- Mobile Dropdown Menu -->
-    <div id="mobileMenu" class="m-auto md:hidden hidden bg-primary-dark border-t border-gray-700">
-        <nav class="flex flex-col py-4 space-y-3 px-6  items-end">
-            <a href="#about" class="text-text-light hover:text-accent-teal transition">About</a>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden bg-primary-dark border-t border-gray-700">
+        <nav class="flex flex-col py-4 space-y-3 px-6 items-end">
+            <a href="#about"    class="text-text-light hover:text-accent-teal transition">About</a>
             <a href="#projects" class="text-text-light hover:text-accent-teal transition">Projects</a>
-            <a href="#contact" class="text-text-light hover:text-accent-teal transition">Contact</a>
+            <a href="#contact"  class="text-text-light hover:text-accent-teal transition">Contact</a>
         </nav>
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <!-- 
-            2. Hero Section 
-            The first thing the visitor sees, designed to be impactful.
-        -->
-        <section id="home" class="section pt-32 pb-24 md:pt-40 md:pb-32 text-center flex flex-row items-center justify-around">
-            <div class="">
-                <!-- Placeholder for photo/image -->
-                <img src="zion.png" alt="Your Placeholder Photo" class=" max-sm:hidden w-22 h-22 mx-auto md:mx-0 object-cover ">
+        <!-- ── Hero ── -->
+        <section id="home" class="section pt-24 pb-24 md:pt-36 md:pb-32">
+            <!-- Mobile: stacked (image on top), Desktop: side-by-side -->
+            <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-10">
+
+                <!-- Text side -->
+                <div class="w-full md:w-3/5 text-center md:text-left">
+                    <p class="fade-up text-lg font-semibold text-accent-teal mb-3">Hello World, I'm</p>
+                    <h1 class="fade-up text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-tight tracking-tight mb-6">
+                        <span id="heroName">Aisien Zion</span><span class="cursor"></span>
+                    </h1>
+                    <p class="fade-up text-lg sm:text-xl text-gray-400 mb-8 max-w-xl mx-auto md:mx-0">
+                        I build exceptional user interfaces and seamless web experiences as a
+                        <span class="text-accent-teal font-semibold">Front-End Developer</span>.
+                    </p>
+                    <div class="fade-up flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="#projects" class="float-badge inline-block px-8 py-3 bg-accent-teal text-primary-dark font-bold text-base rounded-full shadow-lg hover:bg-teal-300 transition duration-300">
+                            View My Work →
+                        </a>
+                        <a href="#contact" class="inline-block px-8 py-3 border-2 border-accent-teal text-accent-teal font-bold text-base rounded-full hover:bg-accent-teal hover:text-primary-dark transition duration-300">
+                            Hire Me
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Photo side — visible on ALL screen sizes -->
+                <div class="fade-in w-full md:w-2/5 flex justify-center md:justify-end">
+                    <div class="photo-ring rounded-full">
+                        <img src="zion.png"
+                             alt="Aisien Zion"
+                             class="w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full object-cover"
+                             onerror="this.src='https://placehold.co/288x288/2DD4BF/111827?text=Z'">
+                    </div>
+                </div>
             </div>
-            <div class="max-w-4xl mx-auto">
-                <p class="text-lg font-semibold text-accent-teal mb-4">Hello World, I'm</p>
-                <h1 class="text-5xl sm:text-7xl font-extrabold leading-tight tracking-tight mb-6">
-                    [Aisien Zion]
-                </h1>
-                <p class="text-xl sm:text-2xl text-gray-400 mb-10">
-                    I build exceptional user interfaces and seamless web experiences as a <span class="text-accent-teal font-medium">Front-End Developer</span>.
-                </p>
-                <a href="#projects" class="inline-block px-8 py-3 bg-accent-teal text-primary-dark font-bold text-lg rounded-full shadow-lg hover:bg-teal-300 transition duration-300 transform hover:scale-105">
-                    View My Work →
-                </a>
+
+            <!-- Scroll indicator -->
+            <div class="mt-16 flex justify-center fade-in">
+                <div class="flex flex-col items-center gap-2 text-gray-500 text-sm">
+                    <span>Scroll</span>
+                    <div class="w-px h-8 bg-gradient-to-b from-gray-500 to-transparent animate-bounce"></div>
+                </div>
             </div>
         </section>
 
-        <!-- 
-            3. About Me 
-            Adding professional context and core skills.
-        -->
-        <section id="about" class="section bg-secondary-dark rounded-xl shadow-2xl">
-            <h2 class="text-4xl font-bold text-center mb-16">About Me</h2>
-            <div class="grid md:grid-cols-3 gap-12 items-start ">
-                
-                <!-- Bio Text -->
-                <div class="md:col-span-2 ml-10 ">
-                    <p class="text-gray-300 mb-6 leading-relaxed ">
+        <!-- ── About ── -->
+        <section id="about" class="section bg-secondary-dark rounded-xl shadow-2xl px-6 sm:px-10">
+            <h2 class="fade-up text-4xl font-bold text-center mb-16">About Me</h2>
+            <div class="grid md:grid-cols-3 gap-12 items-start">
+
+                <!-- Bio -->
+                <div class="md:col-span-2 space-y-4">
+                    <p class="fade-left text-gray-300 leading-relaxed">
                         I am passionate about creating clean, functional, and visually appealing web applications. My journey into front-end development began with a focus on delivering excellent user experience (UX) and writing highly maintainable code. I thrive in environments that prioritize performance and accessibility.
                     </p>
-                    <p class="text-gray-300 leading-relaxed ">
+                    <p class="fade-left text-gray-300 leading-relaxed">
                         I specialize in translating design concepts into pixel-perfect, responsive reality, ensuring every project not only looks great but also provides an intuitive and smooth experience across all devices. I am constantly learning new tools and staying ahead of modern web standards.
                     </p>
-                    <div class="mt-8">
-                        <!-- Placeholder for photo/image -->
-                        <img src="zion.png" alt="Your Placeholder Photo" class="w-24 h-24 rounded-full mx-auto md:mx-0 object-cover border-4 border-accent-teal/50 shadow-lg">
+
+                    <!-- About photo — small rounded thumbnail -->
+                    <div class="pt-6 fade-left">
+                        <div class="photo-ring rounded-full inline-block">
+                            <img src="zion.png"
+                                 alt="Aisien Zion"
+                                 class="w-20 h-20 rounded-full object-cover"
+                                 onerror="this.src='https://placehold.co/80x80/2DD4BF/111827?text=Z'">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Skills -->
-                <div class="max-sm:ml-10">
-                    <h3 class="text-2xl font-semibold mb-4 text-accent-teal">Core Skills</h3>
-                    <ul class="space-y-3 text-gray-400 ">
-                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>HTML5 & CSS3</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>JavaScript (ES6+)</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>React / Vue.js</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Tailwind CSS & SASS</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Gsap </li>
-                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-accent-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Git & GitHub</li>
-                    </ul>
+                <!-- Skills with animated bars -->
+                <div class="fade-right">
+                    <h3 class="text-2xl font-semibold mb-6 text-accent-teal glow-text">Core Skills</h3>
+                    <div class="space-y-4" id="skillBars">
+                        <!-- skill items generated by JS below -->
+                    </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- 
-            4. Projects Section 
-            Showcasing the two existing websites.
-        -->
+        <!-- ── Projects ── -->
         <section id="projects" class="section">
-            <h2 class="text-4xl font-bold text-center mb-16">My Latest Work</h2>
-            
+            <h2 class="fade-up text-4xl font-bold text-center mb-16">My Latest Work</h2>
+
             <div class="space-y-16">
                 <!-- Project 1 -->
-                <div class="bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row gap-8 items-center">
-                    <!-- Project Image -->
-                    <div class="lg:w-1/2 flex-shrink-0">
+                <div class="project-card fade-up bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="w-full lg:w-1/2 flex-shrink-0 overflow-hidden rounded-lg">
                         <img src="nike.png"
-                             alt="Screenshot of Project Website 1" 
-                             class="rounded-lg border-2 border-accent-teal/50 transition duration-500 hover:scale-[1.01] shadow-xl w-full h-auto"
-                             onerror="this.src='https://placehold.co/600x400/2DD4BF/111827?text=Image+Not+Found'">
+                             alt="Nike E-Commerce Store"
+                             class="rounded-lg border-2 border-accent-teal/50 w-full h-auto transition duration-500 hover:scale-[1.03] shadow-xl"
+                             onerror="this.src='https://placehold.co/600x400/2DD4BF/111827?text=Nike+Store'">
                     </div>
-                    
-                    <!-- Project Details -->
-                    <div class="lg:w-1/2">
-                        <h3 class="text-3xl font-bold text-accent-teal mb-3">Project Title: E-Commerce Store</h3>
-                        <p class="text-gray-400 mb-6">
-                            A fully responsive mock e-commerce platform built to demonstrate advanced state management and dynamic routing. It features a complete shopping cart implementation, product filtering, and user authentication flow.
+                    <div class="w-full lg:w-1/2">
+                        <p class="text-accent-teal text-sm font-semibold uppercase tracking-widest mb-1">Featured Project</p>
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-3">E-Commerce Store</h3>
+                        <p class="text-gray-400 mb-5 leading-relaxed">
+                            A fully responsive mock e-commerce platform built to demonstrate advanced state management and dynamic routing. Features a complete shopping cart implementation, product filtering, and user authentication flow.
                         </p>
-                        <p class="mb-4 text-sm text-gray-500 font-medium">
-                            <span class="text-accent-teal">Tech Stack:</span> React, Tailwind CSS, Gsap
+                        <p class="mb-5 text-sm text-gray-500">
+                            <span class="text-accent-teal font-medium">Stack:</span> React · Tailwind CSS · GSAP
                         </p>
-                        <div class="flex space-x-4">
-                            <a href="https://nike-woad-seven.vercel.app/" target="_blank" class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300 transform hover:translate-y-[-2px]">
-                                View Live Site
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://nike-woad-seven.vercel.app/" target="_blank"
+                               class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300">
+                                View Live ↗
                             </a>
-                            <a href="https://github.com/zeetech2020/Nike" target="_blank" class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">
+                            <a href="https://github.com/zeetech2020/Nike" target="_blank"
+                               class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">
                                 GitHub Code
                             </a>
                         </div>
@@ -190,31 +286,30 @@
                 </div>
 
                 <!-- Project 2 -->
-                <div class="bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row-reverse gap-8 items-center">
-                    
-                    <!-- Project Image -->
-                    <div class="lg:w-1/2 flex-shrink-0">
+                <div class="project-card fade-up bg-secondary-dark p-6 sm:p-10 rounded-xl shadow-2xl flex flex-col lg:flex-row-reverse gap-8 items-center">
+                    <div class="w-full lg:w-1/2 flex-shrink-0 overflow-hidden rounded-lg">
                         <img src="gas.png"
-                             alt="Screenshot of Project Website 2" 
-                             class="rounded-lg border-2 border-gray-500 transition duration-500 hover:scale-[1.01] shadow-xl w-full h-auto"
-                             onerror="this.src='https://placehold.co/600x400/4B5563/111827?text=Image+Not+Found'">
+                             alt="Glorious Angel School Website"
+                             class="rounded-lg border-2 border-gray-500 w-full h-auto transition duration-500 hover:scale-[1.03] shadow-xl"
+                             onerror="this.src='https://placehold.co/600x400/4B5563/111827?text=School+Website'">
                     </div>
-                    
-                    <!-- Project Details -->
-                    <div class="lg:w-1/2 lg:text-right">
-                        <h3 class="text-3xl font-bold text-accent-teal mb-3">Project Title: School Website</h3>
-                        <p class="text-gray-400 mb-6">
-                            An interactive and minimalist school dashboard built with React, Tailwind CSS, and HTML, featuring smooth GSAP-powered animations. The project focuses on creating a responsive and visually engaging interface that allows students and staff to easily access important information across all devices.
+                    <div class="w-full lg:w-1/2 lg:text-right">
+                        <p class="text-accent-teal text-sm font-semibold uppercase tracking-widest mb-1">Featured Project</p>
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-3">School Website</h3>
+                        <p class="text-gray-400 mb-5 leading-relaxed">
+                            An interactive and minimalist school dashboard built with React, Tailwind CSS, and HTML, featuring smooth GSAP-powered animations. Responsive and visually engaging so students and staff can access information effortlessly on any device.
                         </p>
-                        <p class="mb-4 text-sm text-gray-500 font-medium">
-                            <span class="text-accent-teal">Tech Stack:</span> React Js,Tailwind Css, Gsap, HTML5,  (Internal Styling)
+                        <p class="mb-5 text-sm text-gray-500">
+                            <span class="text-accent-teal font-medium">Stack:</span> React · Tailwind CSS · GSAP · HTML5
                         </p>
-                        <div class="flex lg:justify-end space-x-4">
-                            <a href="https://github.com/zeetech2020/glorious-angel-school" target="_blank" class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">
-                                GitHub Code
+                        <div class="flex flex-wrap gap-3 lg:justify-end">
+                            <a href="https://glorious-angel-school.vercel.app/" target="_blank"
+                               class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300">
+                                View Live ↗
                             </a>
-                            <a href="https://glorious-angel-school.vercel.app/" target="_blank" class="px-5 py-2 bg-accent-teal text-primary-dark font-semibold rounded-full hover:bg-teal-300 transition duration-300 transform hover:translate-y-[-2px]">
-                                View Live Site
+                            <a href="https://github.com/zeetech2020/glorious-angel-school" target="_blank"
+                               class="px-5 py-2 border border-gray-600 text-text-light rounded-full hover:bg-gray-700 transition duration-300">
+                                GitHub Code
                             </a>
                         </div>
                     </div>
@@ -222,79 +317,170 @@
             </div>
         </section>
 
-        <!-- 
-            5. Contact Section 
-            A simple call to action for recruiters/clients.
-        -->
+        <!-- ── Contact ── -->
         <section id="contact" class="section text-center">
-            <h2 class="text-4xl font-bold mb-6">Get In Touch</h2>
-            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                Have a project idea or just want to chat about front-end technologies? Feel free to reach out—my inbox is always open.
+            <h2 class="fade-up text-4xl font-bold mb-6">Get In Touch</h2>
+            <p class="fade-up text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                Have a project idea or just want to chat about front-end technologies? Feel free to reach out — my inbox is always open.
             </p>
-
-            <a href="mailto:aisienzion2020@gmail.com" class="inline-block px-10 py-4 border-2 border-accent-teal text-accent-teal font-bold text-xl rounded-full hover:bg-accent-teal hover:text-primary-dark transition duration-300 transform hover:scale-105">
-                Say Hello!
-            </a>
-            
-            <div class="mt-12 text-gray-500 space-x-6 text-2xl">
-
-                <!-- GitHub Icon -->
-                <a href="https://github.com/zeetech2020/" target="_blank" class="hover:text-accent-teal transition duration-300" aria-label="GitHub Profile">
-                    <i class="fa-brands fa-github" style="color: #ffffff;"></i>
+            <div class="fade-up">
+                <a href="mailto:aisienzion2020@gmail.com"
+                   class="inline-block px-10 py-4 border-2 border-accent-teal text-accent-teal font-bold text-xl rounded-full hover:bg-accent-teal hover:text-primary-dark transition duration-300 hover:scale-105 transform">
+                    Say Hello!
                 </a>
-                <!-- Email Icon -->
-                <a href="mailto:aisienzion2020@gmail.com" class="hover:text-accent-teal transition duration-300" aria-label="Email Address">
-                    <i class="fa-solid fa-envelope" style="color: #ffffff;"></i>
+            </div>
+
+            <div class="fade-up mt-12 flex flex-wrap items-center justify-center gap-6 text-2xl text-gray-500">
+                <a href="https://github.com/zeetech2020/" target="_blank"
+                   class="hover:text-accent-teal transition duration-300 hover:scale-125 transform" aria-label="GitHub">
+                    <i class="fa-brands fa-github text-white"></i>
+                </a>
+                <a href="mailto:aisienzion2020@gmail.com"
+                   class="hover:text-accent-teal transition duration-300 hover:scale-125 transform" aria-label="Email">
+                    <i class="fa-solid fa-envelope text-white"></i>
                 </a>
                 <a href="tel:+2349150320350"
-                   class="inline-flex items-center px-6 py-3 bg-accent-teal text-primary-dark font-bold rounded-full shadow-lg hover:bg-teal-300 transition duration-300 transform hover:scale-105">
-
-                    <!-- Phone Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="w-5 h-5 mr-2"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke="currentColor"
-                         stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.47l.7 2.33a2 2 0 01-.45 1.86l-1.12 1.12a16 16 0 007.07 7.07l1.12-1.12a2 2 0 011.86-.45l2.33.7A2 2 0 0121 18.72V21a2 2 0 01-2 2h-1C8.82 23 2 16.18 2 8V6a2 2 0 011-1.73z" />
+                   class="inline-flex items-center px-6 py-3 bg-accent-teal text-primary-dark font-bold text-base rounded-full shadow-lg hover:bg-teal-300 transition duration-300 hover:scale-105 transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.47l.7 2.33a2 2 0 01-.45 1.86l-1.12 1.12a16 16 0 007.07 7.07l1.12-1.12a2 2 0 011.86-.45l2.33.7A2 2 0 0121 18.72V21a2 2 0 01-2 2h-1C8.82 23 2 16.18 2 8V6a2 2 0 011-1.73z" />
                     </svg>
-
                     Call Me
                 </a>
             </div>
         </section>
-
     </main>
 
     <!-- Footer -->
     <footer class="bg-secondary-dark py-8 mt-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            <p>&copy; 2025 Aisien zion. Built with HTML & Tailwind CSS.</p>
+            <p>&copy; 2025 Aisien Zion. Built with HTML &amp; Tailwind CSS.</p>
         </div>
     </footer>
 
     <script>
-        // Simple script to handle smooth scrolling/navigation if needed
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('a[href^="#"]');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    // Prevent default anchor link behavior
-                    // Note: Since we use scroll-behavior: smooth in CSS, this is technically optional, 
-                    // but good practice if more complex routing/logic were involved.
-                });
+    /* ────────────────────────────────────────────
+       1. Mobile menu toggle (smooth slide)
+    ──────────────────────────────────────────── */
+    const menuBtn  = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
+    });
+
+    // Close mobile menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+
+    /* ────────────────────────────────────────────
+       2. Skill bars (built via JS, animated on scroll)
+    ──────────────────────────────────────────── */
+    const skills = [
+        { name: 'HTML5 & CSS3',       pct: 95 },
+        { name: 'JavaScript (ES6+)',   pct: 88 },
+        { name: 'React / Vue.js',      pct: 82 },
+        { name: 'Tailwind CSS & SASS', pct: 90 },
+        { name: 'GSAP',               pct: 75 },
+        { name: 'Git & GitHub',        pct: 85 },
+    ];
+
+    const container = document.getElementById('skillBars');
+    skills.forEach(s => {
+        container.insertAdjacentHTML('beforeend', `
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-300 flex items-center gap-2">
+                <svg class="w-4 h-4 text-accent-teal flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                ${s.name}
+              </span>
+              <span class="text-accent-teal font-semibold">${s.pct}%</span>
+            </div>
+            <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="skill-bar-fill h-full bg-gradient-to-r from-teal-400 to-teal-600 rounded-full" data-pct="${s.pct}"></div>
+            </div>
+          </div>
+        `);
+    });
+
+    /* ────────────────────────────────────────────
+       3. GSAP animations
+    ──────────────────────────────────────────── */
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Logo entrance
+    gsap.from('#logo', { duration: 0.8, y: -30, opacity: 0, ease: 'power3.out' });
+
+    // Shared ScrollTrigger helper
+    function revealOnScroll(selector, vars, triggerEl) {
+        gsap.from(selector, {
+            scrollTrigger: {
+                trigger: triggerEl || selector,
+                start: 'top 85%',
+                toggleActions: 'play none none none',
+            },
+            duration: 0.8,
+            ease: 'power3.out',
+            stagger: 0.15,
+            ...vars,
+        });
+    }
+
+    // Hero text — staggered fade-up
+    revealOnScroll('#home .fade-up', { y: 40, opacity: 0 }, '#home');
+    // Hero image fade in
+    revealOnScroll('#home .fade-in', { opacity: 0, scale: 0.85 }, '#home');
+
+    // About
+    revealOnScroll('#about .fade-up',    { y: 40, opacity: 0 }, '#about');
+    revealOnScroll('#about .fade-left',  { x: -40, opacity: 0 }, '#about');
+    revealOnScroll('#about .fade-right', { x: 40, opacity: 0 }, '#about');
+
+    // Skill bars fill on scroll into view
+    ScrollTrigger.create({
+        trigger: '#skillBars',
+        start: 'top 80%',
+        onEnter: () => {
+            document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.pct + '%';
             });
-        });
-    </script>
-    <script>
-        const menuBtn = document.getElementById("menuBtn");
-        const mobileMenu = document.getElementById("mobileMenu");
+        }
+    });
 
-        menuBtn.addEventListener("click", () => {
-            mobileMenu.classList.toggle("hidden");
-        });
-    </script>
+    // Projects
+    revealOnScroll('#projects .fade-up',   { y: 50, opacity: 0 }, '#projects');
 
+    // Contact
+    revealOnScroll('#contact .fade-up',    { y: 40, opacity: 0 }, '#contact');
+
+    /* ────────────────────────────────────────────
+       4. Parallax subtle on hero photo
+    ──────────────────────────────────────────── */
+    gsap.to('#home .photo-ring', {
+        scrollTrigger: {
+            trigger: '#home',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+        },
+        y: 40,
+        ease: 'none',
+    });
+
+    /* ────────────────────────────────────────────
+       5. Smooth scroll for nav links
+    ──────────────────────────────────────────── */
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', e => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+    </script>
 </body>
-                  </html>
+</html>
